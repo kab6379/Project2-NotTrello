@@ -1,83 +1,102 @@
+const { indexOf, take } = require('underscore');
 const helper = require('./helper.js');
 
-const handleDomo = (e) => {
+const handleTask = (e) => {
     e.preventDefault();
     helper.hideError();
 
-    const name = e.target.querySelector('#domoName').value;
-    const age = e.target.querySelector('#domoAge').value;
-    const level = e.target.querySelector('#domoLevel').value;
+    const name = e.target.querySelector('#taskName').value;
+    const description = e.target.querySelector('#taskDescription').value;
+    const length = e.target.querySelector('#taskLength').value;
     const _csrf = e.target.querySelector('#_csrf').value;
     
-    if(!name || !age || !level) {
+    if(!name || !description || !length) {
         helper.handleError('All fields are required!');
         return false;
     }
 
-    helper.sendPost(e.target.action, {name, age, level, _csrf}, loadDomosFromServer);
+    helper.sendPost(e.target.action, {name, description, length, _csrf}, loadTasksFromServer);
 
     return false;
 }
 
-const DomoForm = (props) => {
+const handleDelete = (e) => {
+    e.preventDefault();
+    helper.hideError();
+
+    const deletedTaskName = e.target.parentElement.querySelector(".taskName").value;
+    const _csrf = e.target.parentElement.key;
+
+    helper.sendPost('/delete', {deletedTaskName, _csrf}, loadTasksFromServer);
+
+    return false;
+}
+
+const TaskForm = (props) => {
     return(
-        <form id="domoForm"
-            onSubmit={handleDomo}
-            name="domoForm"
+        <form id="taskForm"
+            onSubmit={handleTask}
+            name="taskForm"
             action="/maker"
             method="POST"
-            className="domoForm"
+            className="taskForm"
         >
             <label htmlFor="name">Name: </label>
-            <input id="domoName" type="text" name="name" placeholder="Domo Name" />
-            <label htmlFor="age">Age: </label>
-            <input id="domoAge" type="number" min="0" name="age" />
-            <label htmlFor="level">Level: </label>
-            <input id="domoLevel" type="number" min="1" name="level" />
+            <input id="taskName" type="text" name="name" placeholder="Task Name" />
+
+            <label htmlFor="description">Description: </label>
+            <input id="taskDescription" type="text" name="description" placeholder="Task Description"/>
+
+            <label htmlFor="length">Length (Minutes): </label>
+            <input id="taskLength" type="number" min="1" name="Task Length" />
+
             <label htmlFor="sort">Sort: </label>
-            <select id="domoSort" onChange={loadDomosFromServer}>
+            <select id="taskSort" onChange={loadTasksFromServer}>
                 <option value="Alphabetical">Alphabetical</option>
+                <option value="Shortest">Shortest</option>
+                <option value="Longest">Longest</option>
                 <option value="Oldest">Oldest</option>
-                <option value="Youngest">Youngest</option>
-                <option value="Level">Level</option>
+                <option value="Newest">Newest</option>
             </select>
+
             <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
-            <input className="makeDomoSubmit" type="submit" value="Make Domo" />
+            <input className="postTaskSubmit" type="submit" value="Post Task" />
         </form>
     );
 }
 
-const DomoList = (props) => {
-    if(props.domos.length === 0){
+const TaskList = (props) => {
+    if(props.tasks.length === 0){
         return(
-            <div className="domoList">
-                <h3 className="emptyDomo">No Domos Yet!</h3>
+            <div className="taskList">
+                <h3 className="emptyTask">No Tasks Yet!</h3>
             </div>
         );
     }
 
-    const domoNodes = props.domos.map(domo => {
+    const taskNodes = props.tasks.map(task => {
         return(
-            <div key={domo._id} className="domo">
-                <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
-                <h3 className="domoName"> Name: {domo.name} </h3>
-                <h3 className="domoAge"> Age: {domo.age} </h3>
-                <h3 className="domoLevel"> Level: {domo.level} </h3>
+            <div key={task._id} className="task">
+                <h3 className="taskName" value={task.name}> Name: {task.name} </h3>
+                <h3 className="taskDescription"> Description: {task.description} </h3>
+                <h3 className="taskLength"> Length: {task.length} </h3>
+                <h3 className="taskDate"> Date: {task.createdDate.substring(0, task.createdDate.indexOf('T'))} </h3>
+                <button className="taskDelete" onClick={handleDelete}> Complete Task</button>
             </div>
         );
     });
 
     return(
-        <div className="domoList">
-            {domoNodes}
+        <div className="taskList">
+            {taskNodes}
         </div>
     );
 }
 
-const sortDomos = async (domos) => {
-    const sort = document.getElementById('domoSort').value;
+const sortTasks = async (tasks) => {
+    const sort = document.getElementById('taskSort').value;
     if(sort === 'Alphabetical'){
-        domos.sort((a, b) => {
+        tasks.sort((a, b) => {
             if(a.name.toUpperCase() < b.name.toUpperCase()){
                 return -1;
             } else if (a.name.toUpperCase() > b.name.toUpperCase()){
@@ -86,31 +105,41 @@ const sortDomos = async (domos) => {
                 return 0;
             }
         });
-    }else if(sort === 'Oldest'){
-        domos.sort((a, b) => {
-            if(a.age > b.age){
+    } else if(sort === 'Shortest'){
+        tasks.sort((a, b) => {
+            if(a.length < b.length){
                 return -1;
-            } else if (a.age < b.age){
+            } else if(a.length > b.length){
                 return 1;
             } else {
                 return 0;
             }
         });
-    }else if(sort === 'Youngest'){
-        domos.sort((a, b) => {
-            if(a.age < b.age){
+    } else if(sort === 'Longest'){
+        tasks.sort((a, b) => {
+            if(a.length > b.length){
                 return -1;
-            } else if (a.age > b.age){
+            } else if(a.length < b.length){
                 return 1;
             } else {
                 return 0;
             }
         });
-    } else if(sort === 'Level'){
-        domos.sort((a, b) => {
-            if(a.level > b.level){
+    } else if(sort === 'Oldest'){
+        tasks.sort((a, b) => {
+            if(a.createdDate < b.createdDate){
                 return -1;
-            } else if (a.level < b.level){
+            } else if(a.createdDate > b.createdDate){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    } else if(sort === 'Newest'){
+        tasks.sort((a, b) => {
+            if(a.createdDate > b.createdDate){
+                return -1;
+            } else if(a.createdDate < b.createdDate){
                 return 1;
             } else {
                 return 0;
@@ -119,13 +148,13 @@ const sortDomos = async (domos) => {
     }
 }
 
-const loadDomosFromServer = async () => {
-    const response = await fetch('/getDomos');
+const loadTasksFromServer = async () => {
+    const response = await fetch('/getTasks');
     const data = await response.json();
-    sortDomos(data.domos);
+    sortTasks(data.tasks);
     ReactDOM.render(
-        <DomoList domos={data.domos} />,
-        document.getElementById('domos')
+        <TaskList tasks={data.tasks} />,
+        document.getElementById('tasks')
     );
 }
 
@@ -134,16 +163,16 @@ const init = async () => {
     const data = await response.json();
 
     ReactDOM.render(
-        <DomoForm csrf={data.csrfToken} />,
-        document.getElementById('makeDomo')
+        <TaskForm csrf={data.csrfToken} />,
+        document.getElementById('makeTask')
     );
 
     ReactDOM.render(
-        <DomoList domos={[]} />,
-        document.getElementById('domos')  
+        <TaskList tasks={[]} />,
+        document.getElementById('tasks')  
     );
 
-    loadDomosFromServer();
+    loadTasksFromServer();
 }
 
 window.onload = init;
