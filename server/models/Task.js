@@ -22,6 +22,11 @@ const TaskSchema = new mongoose.Schema({
     min: 1,
     require: true,
   },
+  myColor: {
+    type: String,
+    required:  true,
+    trim: true,
+  },
   owner: {
     type: mongoose.Schema.ObjectId,
     required: true,
@@ -37,6 +42,7 @@ TaskSchema.statics.toAPI = (doc) => ({
   name: doc.name,
   description: doc.description,
   length: doc.length,
+  myColor: doc.myColor,
   createdDate: doc.createdDate,
 });
 
@@ -46,11 +52,7 @@ TaskSchema.statics.findByOwner = (ownerId, callback) => {
     owner: mongoose.Types.ObjectId(ownerId),
   };
 
-  return TaskModel.find(search).select('name description length createdDate').lean().exec(callback);
-};
-
-TaskSchema.statics.deleteMyTask = (deletedTaskName, callback) => {
-  TaskModel.deleteOne({ name: deletedTaskName }).lean().exec(callback);
+  return TaskModel.find(search).select('name description length myColor createdDate').lean().exec(callback);
 };
 
 TaskModel = mongoose.model('Task', TaskSchema);

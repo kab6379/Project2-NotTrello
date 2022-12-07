@@ -7,10 +7,15 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
+const notFoundPage = (req, res) => {
+  res.render('notFound', { csrfToken: req.csrfToken() });
+};
+
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
+
 const login = (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -58,12 +63,36 @@ const signup = async (req, res) => {
   }
 };
 
+const changePass = async (req, res) => {
+  const newPass = `${req.body.newPass}`;
+  const newPass2 = `${req.body.newPass2}`;
+
+  if (!newPass || !newPass2) {
+    return res.status(400).json({ error: 'All fields are required!' });
+  }
+
+  if (newPass !== newPass2) {
+    return res.status(400).json({ error: 'Passwords do not match!' });
+  }
+
+  try {
+    const hash = await Account.generateHash(newPass);
+    await Account.updateOne({username: req.session.account.username}, {password: hash});
+    return res.json({ redirect: '/logout' });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: 'An error occurred' });
+  }
+};
+
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
 module.exports = {
   loginPage,
+  notFoundPage,
   login,
   logout,
   signup,
+  changePass,
   getToken,
 };

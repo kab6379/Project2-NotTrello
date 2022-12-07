@@ -4,7 +4,7 @@ const TaskModel = require('../models/Task');
 const { Task } = models;
 
 const makeTask = async (req, res) => {
-  if (!req.body.name || !req.body.description || !req.body.length) {
+  if (!req.body.name || !req.body.description || !req.body.length || !req.body.myColor) {
     return res.status(400).json({ error: 'Name, description, and length are required' });
   }
 
@@ -12,6 +12,7 @@ const makeTask = async (req, res) => {
     name: req.body.name,
     description: req.body.description,
     length: req.body.length,
+    myColor: req.body.myColor,
     owner: req.session.account._id,
     createdDate: req.body.createdDate,
   };
@@ -23,6 +24,7 @@ const makeTask = async (req, res) => {
       name: newTask.name,
       description: newTask.description,
       length: newTask.length,
+      myColor: newTask.myColor,
       createdDate: newTask.createdDate,
     });
   } catch (err) {
@@ -45,18 +47,28 @@ const getTasks = (req, res) => TaskModel.findByOwner(req.session.account._id, (e
   return res.json({ tasks: docs });
 });
 
-const deleteTask = (req, res) => TaskModel.deleteMyTask(req.body.deletedTaskName, (err, docs) => {
-  if (err) {
+const deleteTask = async (req, res) => {
+  try {
+    await Task.deleteOne({name: req.body.deletedTaskName});
+  } catch (err) {
     console.log(err);
-    return res.status(400).json({ error: 'An error occurred!' });
+    return res.status(400).json({ error: 'An error occurred' });
   }
+};
 
-  return res.json({ tasks: docs });
-});
+const updateTask = async (req, res) => {
+  try {
+    await Task.updateOne({name: req.body.updatedTaskName}, {myColor: req.body.updatedColor});
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: 'An error occurred' });
+  }
+};
 
 module.exports = {
   makerPage,
   makeTask,
   getTasks,
   deleteTask,
+  updateTask,
 };

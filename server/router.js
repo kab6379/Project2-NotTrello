@@ -12,12 +12,18 @@ const router = (app) => {
 
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
+  app.post('/changepass', mid.requiresSecure, mid.requiresLogin, controllers.Account.changePass);
+
   app.get('/maker', mid.requiresLogin, controllers.Task.makerPage);
   app.post('/maker', mid.requiresLogin, controllers.Task.makeTask);
 
   app.post('/delete', mid.requiresLogin, controllers.Task.deleteTask);
 
+  app.post('/update', mid.requiresLogin, controllers.Task.updateTask);
+
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+
+  app.get('*', controllers.Account.notFoundPage)
 };
 
 module.exports = router;

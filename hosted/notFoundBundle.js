@@ -1,0 +1,1 @@
+(()=>{const e=e=>React.createElement("div",null,React.createElement("h3",null,"ERROR: 404"),React.createElement("p",null,"Could not find page: ",e.myUrl));window.onload=async()=>{ReactDOM.render(React.createElement(e,{myUrl:window.location.href}),document.getElementById("content"))}})();

@@ -1,0 +1,158 @@
+html, body {
+    background-color: #EBEBEB;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 3em;
+    background-color: #68FF7C;
+    font-weight: bolder;
+}
+
+.navlink {
+    padding: 0.5em;
+    color: black;
+    font-size: 1.3em;
+}
+
+.navlink a, .navlink a:link, .navlink a:visited, .navlink a:hover, .navlink a:active {
+    color: black;
+    text-decoration: none;
+    padding: 0.5em;
+    border-radius: 0.3em;
+    background-color: #68FF7C;
+    transition: background-color 0.4s ease;
+}
+
+.navlink a:hover {
+    transition: background-color 0.8s ease;
+    background-color: #ADFFBA;
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#loginForm, #signupForm, #taskForm, #changePassForm {
+    width: 24em;
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #68FF7C;
+    border-radius: 0.5em;
+    border: 0.2em, solid, black;
+}
+
+#taskForm {
+    flex-direction: row;
+    width: 100%;
+}
+
+.accountInput, .taskInput, .changePassInput {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5em;
+    font-weight: bolder;
+    font-size: 1.2em;
+}
+
+.accountInput, .changePassInput {
+    width: 18em;
+}
+
+.taskInput label {
+    margin-right: 0.2em;
+}
+
+#user, #pass, #pass2, #taskName, #taskDescription, #taskLength, #taskSort, #paidToggle, #newPass, #newPass2 {
+    text-align: center;
+    font-size: 1em;
+    border-radius: 0.1em;
+}
+
+.formSubmit, .postTaskSubmit, .taskDelete {
+    padding: 0.5em;
+    border-radius: 0.3em;
+    background-color: #EBEBEB;
+    color: black;
+    font-weight: bolder;
+}
+
+.formSubmit{
+    width: 18em;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.taskDelete {
+    margin: 0 auto;
+    width: 90%;
+    margin-bottom: 1em;
+}
+
+.formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active,
+.postTaskSubmit:link, .postTaskSubmit:visited, .postTaskSubmit:hover, .postTaskSubmit:active,
+.taskDelete:link, .taskDelete:visited, .taskDelete:hover, .taskDelete:active {
+    color: white;
+}
+
+.formSubmit:hover, .postTaskSubmit:hover, .taskDelete:hover {
+    transition: background-color 0.4s ease;
+    background-color: #3C896D;
+}
+
+#errorMessage {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bolder;
+    margin-top: 2em;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #68FF7C;
+    border-radius: 0.5em;
+    width: 20em;
+}
+
+#taskForm {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.taskList{
+    margin: 0 auto;
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+    gap: 1.5em;
+}
+
+.task{
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    display: flex;
+    flex-direction: column;
+    background-color: #68FF7C;
+}
+
+.task h3, .task label, .task select{
+    margin-left: 2em;
+    font-size: 1.2em;
+    font-weight: bolder;
+}
+
+.task select {
+    width: 40%;
+    margin-bottom: 1em;
+    border-radius: 0.3em;
+}

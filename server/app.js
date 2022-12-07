@@ -51,7 +51,7 @@ app.use(session({
   store: new RedisStore({
     client: redisClient,
   }),
-  secret: 'Domo Arigato',
+  secret: 'Not Trello',
   resave: true,
   saveUninitialized: true,
   cookie: {

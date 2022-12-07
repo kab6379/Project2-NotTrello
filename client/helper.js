@@ -13,16 +13,6 @@ const sendPost = async (url, data, handler) => {
         body: JSON.stringify(data),
     });
 
-    if(url === '/delete'){
-        response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-    }
-
     const result = await response.json();
     document.getElementById('taskMessage').classList.add('hidden');
 
