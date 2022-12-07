@@ -1,3 +1,4 @@
+//React element to display the page not found error (404)
 const NotFoundText = (props) => {
     return(
         <div>
@@ -7,6 +8,7 @@ const NotFoundText = (props) => {
     );
 };
 
+//On page startup, display 404 error
 const init = async () => {
 
     ReactDOM.render(

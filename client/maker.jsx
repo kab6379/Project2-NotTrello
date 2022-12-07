@@ -1,6 +1,7 @@
 const { indexOf, take } = require('underscore');
 const helper = require('./helper.js');
 
+//Handles user's task submissions
 const handleTask = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -21,6 +22,8 @@ const handleTask = (e) => {
     return false;
 }
 
+
+//Handles user requests to complete/delete a task
 const handleDelete = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -34,6 +37,8 @@ const handleDelete = (e) => {
     return false;
 }
 
+
+//Handles user requests to change their password
 const handlePassChange = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -57,6 +62,7 @@ const handlePassChange = (e) => {
     return false;
 }
 
+//Handles user requests to change the assigned color of a task (Paid Version Toggled)
 const changeColor = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -76,12 +82,14 @@ const changeColor = (e) => {
     return false;
 }
 
+//Toggles between paid and free versions of the application
 const toggleVersion = (e) => {
     e.preventDefault();
     helper.hideError();
 
     const taskList = document.querySelectorAll(".task");
 
+    //If paid version is toggled, display additional functions and change colors
     if(e.target.checked == true){
         taskList.forEach(task => {
             task.querySelector("select").style.visibility="visible";
@@ -92,6 +100,7 @@ const toggleVersion = (e) => {
                 task.querySelector("select").parentElement.style.background = "#68FF7C";
             }
         });
+    //If not toggled, clear colors and hide additional functions
     }else{
         taskList.forEach(task => {
             task.querySelector("select").style.visibility="hidden";
@@ -101,6 +110,7 @@ const toggleVersion = (e) => {
     }
 }
 
+//React Element to display user submitted tasks
 const TaskForm = (props) => {
     return(
         <form id="taskForm"
@@ -147,6 +157,7 @@ const TaskForm = (props) => {
     );
 }
 
+//React Element to generate the list of user tasks
 const TaskList = (props) => {
     if(props.tasks.length === 0){
         return(
@@ -183,71 +194,7 @@ const TaskList = (props) => {
     );
 }
 
-const sortTasks = async (tasks) => {
-    const sort = document.getElementById('taskSort').value;
-    if(sort === 'Alphabetical'){
-        tasks.sort((a, b) => {
-            if(a.name.toUpperCase() < b.name.toUpperCase()){
-                return -1;
-            } else if (a.name.toUpperCase() > b.name.toUpperCase()){
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    } else if(sort === 'Shortest'){
-        tasks.sort((a, b) => {
-            if(a.length < b.length){
-                return -1;
-            } else if(a.length > b.length){
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    } else if(sort === 'Longest'){
-        tasks.sort((a, b) => {
-            if(a.length > b.length){
-                return -1;
-            } else if(a.length < b.length){
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    } else if(sort === 'Oldest'){
-        tasks.sort((a, b) => {
-            if(a.createdDate < b.createdDate){
-                return -1;
-            } else if(a.createdDate > b.createdDate){
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    } else if(sort === 'Newest'){
-        tasks.sort((a, b) => {
-            if(a.createdDate > b.createdDate){
-                return -1;
-            } else if(a.createdDate < b.createdDate){
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    }
-}
-
-const loadTasksFromServer = async () => {
-    const response = await fetch('/getTasks');
-    const data = await response.json();
-    sortTasks(data.tasks);
-    ReactDOM.render(
-        <TaskList tasks={data.tasks} />,
-        document.getElementById('content')
-    );
-}
-
+//React Element to display the password change window
 const ChangePassWindow = (props) => {
     return(
         <form id="changePassForm"
@@ -271,6 +218,81 @@ const ChangePassWindow = (props) => {
     );
 };
 
+
+//Method which checks user sort and reloads tasks appropriately
+const sortTasks = async (tasks) => {
+    const sort = document.getElementById('taskSort').value;
+
+    //Alphabetical order by Name
+    if(sort === 'Alphabetical'){
+        tasks.sort((a, b) => {
+            if(a.name.toUpperCase() < b.name.toUpperCase()){
+                return -1;
+            } else if (a.name.toUpperCase() > b.name.toUpperCase()){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    //By Shortest task length (time)
+    } else if(sort === 'Shortest'){
+        tasks.sort((a, b) => {
+            if(a.length < b.length){
+                return -1;
+            } else if(a.length > b.length){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    //By Longest task length (time)
+    } else if(sort === 'Longest'){
+        tasks.sort((a, b) => {
+            if(a.length > b.length){
+                return -1;
+            } else if(a.length < b.length){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    //By Oldest task submitted
+    } else if(sort === 'Oldest'){
+        tasks.sort((a, b) => {
+            if(a.createdDate < b.createdDate){
+                return -1;
+            } else if(a.createdDate > b.createdDate){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    //By Newest task submitted
+    } else if(sort === 'Newest'){
+        tasks.sort((a, b) => {
+            if(a.createdDate > b.createdDate){
+                return -1;
+            } else if(a.createdDate < b.createdDate){
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
+}
+
+//Method to load the tasks from the server; triggered on page startup, on task submission/deletion, and sort onChange
+const loadTasksFromServer = async () => {
+    const response = await fetch('/getTasks');
+    const data = await response.json();
+    sortTasks(data.tasks);
+    ReactDOM.render(
+        <TaskList tasks={data.tasks} />,
+        document.getElementById('content')
+    );
+}
+
+//Run on page startup
 const init = async () => {
     const response = await fetch('/getToken');
     const data = await response.json();
@@ -278,6 +300,7 @@ const init = async () => {
     const changePassButton = document.getElementById('changePassButton');
     const makerPageButton = document.getElementById('makerPageButton');
 
+    //Password change window onclick
     changePassButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(
@@ -287,6 +310,7 @@ const init = async () => {
         return false;
     });
 
+    //Task Maker page onclick
     makerPageButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(
@@ -303,6 +327,7 @@ const init = async () => {
         return false;
     });
 
+    //Render task maker page by default
     ReactDOM.render(
         <TaskForm csrf={data.csrfToken} />,
         document.getElementById('makeTask')

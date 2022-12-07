@@ -1,21 +1,24 @@
-// const { response } = require('express');
 const models = require('../models');
 
 const { Account } = models;
 
+//Render Login Handlebar
 const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
+//Render NotFound handlebar
 const notFoundPage = (req, res) => {
   res.render('notFound', { csrfToken: req.csrfToken() });
 };
 
+//Logs out the user
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
 
+//Logs in the user, redirects to Task Maker page
 const login = (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -35,6 +38,7 @@ const login = (req, res) => {
   });
 };
 
+//Signs up the user, redirects to Task Maker page
 const signup = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -63,6 +67,7 @@ const signup = async (req, res) => {
   }
 };
 
+//Changes the user's password, redirects to login page
 const changePass = async (req, res) => {
   const newPass = `${req.body.newPass}`;
   const newPass2 = `${req.body.newPass2}`;
@@ -77,7 +82,7 @@ const changePass = async (req, res) => {
 
   try {
     const hash = await Account.generateHash(newPass);
-    await Account.updateOne({username: req.session.account.username}, {password: hash});
+    await Account.updateOne({ username: req.session.account.username }, { password: hash });
     return res.json({ redirect: '/logout' });
   } catch (err) {
     console.log(err);
@@ -85,6 +90,7 @@ const changePass = async (req, res) => {
   }
 };
 
+//Helper method to get csrf token
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
 module.exports = {

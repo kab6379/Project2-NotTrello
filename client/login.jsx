@@ -1,5 +1,6 @@
 const helper = require('./helper.js');
 
+//Handles login attempts by the user
 const handleLogin = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -18,6 +19,7 @@ const handleLogin = (e) => {
     return false;
 }
 
+//Handles signup attempts by the user
 const handleSignup = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -42,6 +44,7 @@ const handleSignup = (e) => {
     return false;
 }
 
+//React Element to display the main login window
 const LoginWindow = (props) => {
     return(
         <form id="loginForm"
@@ -66,6 +69,8 @@ const LoginWindow = (props) => {
     );
 };
 
+
+//React element to display the signup window
 const SignupWindow = (props) => {
     return(
         <form id="signupForm"
@@ -94,6 +99,7 @@ const SignupWindow = (props) => {
     );
 };
 
+//Run on page startup
 const init = async () => {
     const response = await fetch('/getToken');
     const data = await response.json();
@@ -101,6 +107,7 @@ const init = async () => {
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
 
+    //Login window onclick
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
@@ -108,6 +115,7 @@ const init = async () => {
         return false;
     });
 
+    //Signup window onclick
     signupButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(<SignupWindow csrf={data.csrfToken} />,
@@ -115,6 +123,7 @@ const init = async () => {
         return false;
     });
 
+    //Display Login window by default
     ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
         document.getElementById('content'));
 };

@@ -5,6 +5,7 @@ let TaskModel = {};
 
 const setName = (name) => _.escape(name).trim();
 
+//Scheme for Task information
 const TaskSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -24,7 +25,7 @@ const TaskSchema = new mongoose.Schema({
   },
   myColor: {
     type: String,
-    required:  true,
+    required: true,
     trim: true,
   },
   owner: {
@@ -46,6 +47,7 @@ TaskSchema.statics.toAPI = (doc) => ({
   createdDate: doc.createdDate,
 });
 
+//Finds task by owner (Logged in user)
 TaskSchema.statics.findByOwner = (ownerId, callback) => {
   const search = {
     // Convert string ownerId to object id

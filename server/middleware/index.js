@@ -1,3 +1,4 @@
+//Redirects the user if not logged in
 const requiresLogin = (req, res, next) => {
   if (!req.session.account) {
     return res.redirect('/');
@@ -5,6 +6,7 @@ const requiresLogin = (req, res, next) => {
   return next();
 };
 
+//Redirects the user if logged in
 const requiresLogout = (req, res, next) => {
   if (req.session.account) {
     return res.redirect('/maker');
@@ -12,6 +14,7 @@ const requiresLogout = (req, res, next) => {
   return next();
 };
 
+//Redirects if unsecure
 const requiresSecure = (req, res, next) => {
   if (req.headers['x-forwarded-proto'] !== 'https') {
     return res.redirect(`https://${req.hostname}${req.url}`);
@@ -19,10 +22,12 @@ const requiresSecure = (req, res, next) => {
   return next();
 };
 
+//Bypasses secure
 const bypassSecure = (req, res, next) => {
   next();
 };
 
+//Exports
 module.exports.requiresLogin = requiresLogin;
 module.exports.requiresLogout = requiresLogout;
 
